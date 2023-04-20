@@ -1,9 +1,15 @@
 PCA <- function (X, scale.unit = TRUE, ncp = 5, ind.sup = NULL, quanti.sup = NULL, 
     quali.sup = NULL, row.w = NULL, col.w = NULL, graph = TRUE, 
-    axes = c(1, 2)) 
+    axes = c(1, 2), center=TRUE) 
 {
-    moy.ptab <- function(V, poids) {
-        as.vector(crossprod(poids/sum(poids),as.matrix(V)))
+    if (center) {
+        moy.ptab <- function(V, poids) {
+            as.vector(crossprod(poids/sum(poids),as.matrix(V)))
+        }
+    } else {
+        moy.ptab <- function(V, poids) {
+            rep(0, ncol(V))
+        }
     }
 	
     ec.tab <- function(V, poids) {

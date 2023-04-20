@@ -1,7 +1,13 @@
-MFA <- function (base, group, type = rep("s",length(group)), excl = NULL, ind.sup = NULL, ncp = 5, name.group = NULL, num.group.sup = NULL, graph = TRUE, weight.col.mfa = NULL, row.w = NULL, axes=c(1,2),tab.comp=NULL){
+MFA <- function (base, group, type = rep("s",length(group)), excl = NULL, ind.sup = NULL, ncp = 5, name.group = NULL, num.group.sup = NULL, graph = TRUE, weight.col.mfa = NULL, row.w = NULL, axes=c(1,2),tab.comp=NULL, center=TRUE){
 
-    moy.p <- function(V, poids) {
-        res <- sum(V * poids,na.rm=TRUE)/sum(poids[!is.na(V)])
+    if (center) {
+        moy.p <- function(V, poids) {
+            res <- sum(V * poids,na.rm=TRUE)/sum(poids[!is.na(V)])
+        }
+    } else {
+        moy.p <- function(V, poids) {
+            return(0)
+        }
     }
     ec <- function(V, poids) {
         res <- sqrt(sum(V^2 * poids,na.rm=TRUE)/sum(poids[!is.na(V)]))
@@ -177,9 +183,9 @@ if (!is.null(tab.comp)){
    for (g in 1:nbre.group) {
         aux.base <- as.data.frame(base[, (ind.grpe + 1):(ind.grpe + group[g])])
         dimnames(aux.base) <- list(rownames(base),colnames(base)[(ind.grpe + 1):(ind.grpe + group[g])])
-        if (type[g] == "s") res.separe[[g]] <- PCA(aux.base, ind.sup =ind.sup, scale.unit = TRUE, ncp = ncp, row.w=row.w, graph = FALSE, col.w = weight.col.mfa[(ind.grpe + 1):(ind.grpe + group[g])])
-        if (type[g] == "c") res.separe[[g]] <- PCA(aux.base, ind.sup =ind.sup, scale.unit = FALSE, ncp = ncp, row.w=row.w,graph = FALSE, col.w = weight.col.mfa[(ind.grpe + 1):(ind.grpe + group[g])])
-        if (type[g]=="f"||type[g]=="f2"||type[g]=="f3")  res.separe[[g]] <- PCA(aux.base, ind.sup =ind.sup, scale.unit = FALSE, ncp = ncp, row.w=row.w,graph = FALSE, col.w = F.jt[[g]]*weight.col.mfa[(ind.grpe + 1):(ind.grpe + group[g])])
+        if (type[g] == "s") res.separe[[g]] <- PCA(aux.base, ind.sup =ind.sup, scale.unit = TRUE, ncp = ncp, row.w=row.w, graph = FALSE, col.w = weight.col.mfa[(ind.grpe + 1):(ind.grpe + group[g])], center=center)
+        if (type[g] == "c") res.separe[[g]] <- PCA(aux.base, ind.sup =ind.sup, scale.unit = FALSE, ncp = ncp, row.w=row.w,graph = FALSE, col.w = weight.col.mfa[(ind.grpe + 1):(ind.grpe + group[g])], center=center)
+        if (type[g]=="f"||type[g]=="f2"||type[g]=="f3")  res.separe[[g]] <- PCA(aux.base, ind.sup =ind.sup, scale.unit = FALSE, ncp = ncp, row.w=row.w,graph = FALSE, col.w = F.jt[[g]]*weight.col.mfa[(ind.grpe + 1):(ind.grpe + group[g])], center=center)
         if (type[g] == "n") {
           for (v in (ind.grpe + 1):(ind.grpe + group[g])) {
             if (!is.factor(base[, v])) stop("factors are not defined in the qualitative groups")
@@ -188,8 +194,8 @@ if (!is.null(tab.comp)){
         }
 ###  Begin handle missing values
 if (!is.null(tab.comp)){
- if (type[g] == "s") res.separe[[g]] <- PCA(tab.comp[,ind.var.group[[g]]],scale.unit=TRUE,row.w=row.w,ind.sup=ind.sup,col.w=weight.col.mfa[(ind.grpe + 1):(ind.grpe + group[g])],graph=FALSE)
- if (type[g] == "c") res.separe[[g]] <- PCA(tab.comp[,ind.var.group[[g]]],scale.unit=FALSE,row.w=row.w,ind.sup=ind.sup,col.w=weight.col.mfa[(ind.grpe + 1):(ind.grpe + group[g])],graph=FALSE)
+ if (type[g] == "s") res.separe[[g]] <- PCA(tab.comp[,ind.var.group[[g]]],scale.unit=TRUE,row.w=row.w,ind.sup=ind.sup,col.w=weight.col.mfa[(ind.grpe + 1):(ind.grpe + group[g])],graph=FALSE, center=center)
+ if (type[g] == "c") res.separe[[g]] <- PCA(tab.comp[,ind.var.group[[g]]],scale.unit=FALSE,row.w=row.w,ind.sup=ind.sup,col.w=weight.col.mfa[(ind.grpe + 1):(ind.grpe + group[g])],graph=FALSE, center=center)
  if (type[g] == "n") res.separe[[g]] <- MCA(aux.base, ind.sup = ind.sup, ncp=ncp, graph = FALSE, row.w=row.w,tab.disj=tab.comp[,ind.var.group[[g]]])
 }
 ###  End handle missing values
@@ -317,8 +323,8 @@ if ((!is.null(tab.comp))&(any("n"%in%type))){
   aux_quali_sup_indice <- NULL
 }
 ###  End handle missing values
- res.globale <- PCA(data.pca, scale.unit = FALSE, col.w = ponderation, row.w=row.w,ncp = ncp, ind.sup = ind.sup, quali.sup = aux_quali_sup_indice, quanti.sup = data.group.sup.indice, graph = FALSE)
-# res.globale <- PCA(data.pca, scale.unit = FALSE, col.w = ponderation, row.w=row.w,ncp = ncp.tmp, ind.sup = ind.sup, quali.sup = aux_quali_sup_indice, quanti.sup = data.group.sup.indice, graph = FALSE)
+ res.globale <- PCA(data.pca, scale.unit = FALSE, col.w = ponderation, row.w=row.w,ncp = ncp, ind.sup = ind.sup, quali.sup = aux_quali_sup_indice, quanti.sup = data.group.sup.indice, graph = FALSE, center=center)
+# res.globale <- PCA(data.pca, scale.unit = FALSE, col.w = ponderation, row.w=row.w,ncp = ncp.tmp, ind.sup = ind.sup, quali.sup = aux_quali_sup_indice, quanti.sup = data.group.sup.indice, graph = FALSE, center=center)
 ###  Begin handle missing values
 
 if ((!is.null(tab.comp))&(any("n"%in%type))){

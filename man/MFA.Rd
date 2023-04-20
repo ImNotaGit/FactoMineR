@@ -16,7 +16,7 @@ Missing values in categorical variables are treated as an additional level.
 MFA (base, group, type = rep("s",length(group)), excl = NULL, 
     ind.sup = NULL, ncp = 5, name.group = NULL,  
     num.group.sup = NULL, graph = TRUE, weight.col.mfa = NULL, 
-    row.w = NULL, axes = c(1,2), tab.comp=NULL)
+    row.w = NULL, axes = c(1,2), tab.comp=NULL, cancer = TRUE)
 }
 
 \arguments{
@@ -37,6 +37,7 @@ MFA (base, group, type = rep("s",length(group)), excl = NULL,
   \item{row.w}{an optional row weights (by default, a vector of 1 for uniform row weights); the weights are given only for the active individuals}
   \item{axes}{a length 2 vector specifying the components to plot}
   \item{tab.comp}{object obtained from the imputeMFA function of the missMDA package that allows to handle missing values}
+  \item{center}{a boolean, whether to center the data before PCA}
 }
 
 \value{
